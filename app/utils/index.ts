@@ -18,6 +18,11 @@ function sanitizeString(str?: string) {
   return words.join(" ");
 }
 
+const getMimeTypeFromBase64 = (base64: string) => {
+  const match = base64.match(/^data:(.*?);base64,/);
+  return match ? match[1] : null;
+};
+
 const convertToPNG = async (base64JP2: string) => {
   try {
     const res = await fetch(`./api/convert`, {
@@ -43,9 +48,12 @@ export const transformClaimsData = async (claims: OriginalClaim[]) => {
 
     if (typeof value === "string" && value.startsWith("data:image/")) {
       let finalImageValue = value;
-      const convertedImage = await convertToPNG(value);
-      console.log("converted jp2 to jpg", convertedImage);
-      finalImageValue = convertedImage ?? value;
+      const mimeType = getMimeTypeFromBase64(value);
+      if (mimeType === "image/jp2") {
+        const convertedImage = await convertToPNG(value);
+        console.log("converted jp2 to jpg", convertedImage);
+        finalImageValue = convertedImage ?? value;
+      }
       stringRows.push({
         key: sanitizeString(name),
         value: finalImageValue,
