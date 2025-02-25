@@ -18,17 +18,37 @@ function sanitizeString(str?: string) {
   return words.join(" ");
 }
 
-export const transformClaimsData = (claims: OriginalClaim[]) => {
+const convertToPNG = async (base64JP2: string) => {
+  try {
+    const res = await fetch(`./api/convert`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ base64JP2 }),
+    });
+    const data = await res.json();
+    return data.message as string;
+  } catch (error) {
+    console.error("Error converting jp2 image: ", error);
+    return null;
+  }
+};
+
+export const transformClaimsData = async (claims: OriginalClaim[]) => {
   const stringRows: Claim[] = [];
-  claims.forEach(({ name, value }) => {
+  for (const claim of claims) {
+    const { name, value } = claim;
     if (name === "id" || name === "type") return; // omit id and type
 
     if (!value) return; // omit properties with no value
 
     if (typeof value === "string" && value.startsWith("data:image/")) {
+      let finalImageValue = value;
+      const convertedImage = await convertToPNG(value);
+      console.log("converted jp2 to jpg", convertedImage);
+      finalImageValue = convertedImage ?? value;
       stringRows.push({
         key: sanitizeString(name),
-        value,
+        value: finalImageValue,
         type: "image",
       });
     } else if (typeof value === "string") {
@@ -38,6 +58,6 @@ export const transformClaimsData = (claims: OriginalClaim[]) => {
         type: "string",
       });
     }
-  });
+  }
   return stringRows;
 };

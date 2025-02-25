@@ -45,10 +45,10 @@ export const useSocket = () => {
 
     socketIo.on(
       "presentationEventMessage",
-      (msg: OriginalPresentationEventMessage) => {
+      async (msg: OriginalPresentationEventMessage) => {
         console.log("presentationEventMessage has arrived", msg);
         if (msg.status === "ok" && msg.claims) {
-          const transformedClaims = transformClaimsData(msg.claims);
+          const transformedClaims = await transformClaimsData(msg.claims);
           setPresentationEventMessage({ ...msg, claims: transformedClaims });
         } else {
           const { ref, status, proofExchangeId } = msg;
