@@ -19,7 +19,7 @@ export default function Presentation({ presentationEventMessage }: Props) {
           <>
             <span className="font-bold text-xl mb-4">{t("claims")}</span>
             <div className="w-full md:w-3/6 flex flex-col items-center rounded-xl bg-gray-50 dark:bg-black p-4">
-              <div className="container mx-auto px-4 flex justify-center">
+              <div className="container mx-auto px-4 block justify-center">
                 <PresentationClaims claims={claims} />
               </div>
             </div>
