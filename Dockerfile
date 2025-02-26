@@ -17,8 +17,10 @@ RUN yarn build
 FROM node:22-bullseye as runner
 WORKDIR /app
 ENV NODE_ENV=production
+
 # Install ImageMagick and dependencies
 RUN apt update && apt install -y imagemagick libopenjp2-7 ghostscript
+
 COPY --from=builder /app/next.config.ts ./
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/server.js ./server.js
@@ -32,8 +34,12 @@ COPY --from=builder /app/entrypoint.sh ./entrypoint.sh
 
 RUN chmod +x /app/entrypoint.sh
 
-RUN addgroup -g 1001 -S nodejs
-RUN adduser -S nextjs -u 1001
+#RUN addgroup -g 1001 -S nodejs
+#RUN adduser -S nextjs -u 1001
+#RUN chown -R nextjs:nodejs /app/.next
+
+RUN groupadd -g 1001 nodejs
+RUN useradd -m -u 1001 -g nodejs -s /bin/bash nextjs
 RUN chown -R nextjs:nodejs /app/.next
 
 USER nextjs
