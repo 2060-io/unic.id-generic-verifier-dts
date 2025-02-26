@@ -14,9 +14,11 @@ ENV NEXT_PUBLIC_BASE_URL=APP_NEXT_PUBLIC_BASE_URL
 
 RUN yarn build
 
-FROM node:22-alpine as runner
+FROM node:22-bullseye as runner
 WORKDIR /app
 ENV NODE_ENV=production
+# Install ImageMagick and dependencies
+RUN apt update && apt install -y imagemagick libopenjp2-7 ghostscript
 COPY --from=builder /app/next.config.ts ./
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/server.js ./server.js
