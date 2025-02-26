@@ -9,9 +9,9 @@ if (!fs.existsSync(tempDir)) {
 }
 
 /**
- * Function to convert a base64 JP2 file to JPG and return the JPG as base64.
+ * Function to convert a base64 JP2 file to PNG and return the PNG as base64.
  * @param {string} base64JP2 - JP2 image in base64.
- * @returns {Promise<string>} - JPG image in base64.
+ * @returns {Promise<string>} - PNG image in base64.
  */
 const convertBase64JP2ToPNGBase64 = (base64JP2: string) => {
   return new Promise((resolve, reject) => {
@@ -27,20 +27,20 @@ const convertBase64JP2ToPNGBase64 = (base64JP2: string) => {
       fs.writeFileSync(jp2Path, buffer);
 
       // Execute the conversion using ImageMagick
-      const command = `magick "${jp2Path}" "${pngPath}"`;
+      const command = `convert "${jp2Path}" "${pngPath}"`;
 
       exec(command, (err, stdout, stderr) => {
         if (err) {
           return reject(`Error converting JP2 to PNG ${stderr}`);
         }
         // Read the resulting JPG image and convert it to base64
-        const jpgBase64 = fs.readFileSync(pngPath, { encoding: "base64" });
-        console.log("jpgBase64", jpgBase64);
+        const pngBase64 = fs.readFileSync(pngPath, { encoding: "base64" });
+
         // Delete temporary files
         fs.unlinkSync(jp2Path);
         fs.unlinkSync(pngPath);
 
-        resolve(`data:image/png;base64,${jpgBase64}`);
+        resolve(`data:image/png;base64,${pngBase64}`);
       });
     } catch (error) {
       reject(error);
@@ -58,8 +58,8 @@ export async function POST(req: Request) {
       });
     }
     const imageContent = base64JP2.split(",")[1];
-    const base64PNG = await convertBase64JP2ToPNGBase64(imageContent);
-    return new Response(JSON.stringify({ message: base64PNG }));
+    const pngBase64 = await convertBase64JP2ToPNGBase64(imageContent);
+    return new Response(JSON.stringify({ message: pngBase64 }));
   } catch (error) {
     console.error("Error converting jp2 image: ", error);
     return new Response(JSON.stringify({ error }), { status: 500 });

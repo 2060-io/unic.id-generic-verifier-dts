@@ -8,7 +8,7 @@ export default function PresentationClaims({ claims }: { claims: Claim[] }) {
         <span className="font-semibold text-base mr-1">{item.key}:</span>
         {item.type === "image" ? (
           <Image
-            className="w-2/3 h-full object-cover"
+            className="w-1/3 h-1/3 object-cover"
             src={item.value}
             alt="Card Image"
             width={20}

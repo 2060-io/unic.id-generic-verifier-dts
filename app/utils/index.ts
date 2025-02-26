@@ -51,7 +51,6 @@ export const transformClaimsData = async (claims: OriginalClaim[]) => {
       const mimeType = getMimeTypeFromBase64(value);
       if (mimeType === "image/jp2") {
         const convertedImage = await convertToPNG(value);
-        console.log("converted jp2 to jpg", convertedImage);
         finalImageValue = convertedImage ?? value;
       }
       stringRows.push({
