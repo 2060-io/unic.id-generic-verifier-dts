@@ -34,13 +34,13 @@ const convertBase64JP2ToPNGBase64 = (base64JP2: string) => {
           return reject(`Error converting JP2 to PNG ${stderr}`);
         }
         // Read the resulting JPG image and convert it to base64
-        const pngBase64 = fs.readFileSync(pngPath, { encoding: "base64" });
+        const pngImageBase64 = fs.readFileSync(pngPath, { encoding: "base64" });
 
         // Delete temporary files
         fs.unlinkSync(jp2Path);
         fs.unlinkSync(pngPath);
 
-        resolve(`data:image/png;base64,${pngBase64}`);
+        resolve(pngImageBase64);
       });
     } catch (error) {
       reject(error);
@@ -57,9 +57,8 @@ export async function POST(req: Request) {
         status: 400,
       });
     }
-    const imageContent = base64JP2.split(",")[1];
-    const pngBase64 = await convertBase64JP2ToPNGBase64(imageContent);
-    return new Response(JSON.stringify({ message: pngBase64 }));
+    const pngImageBase64 = await convertBase64JP2ToPNGBase64(base64JP2);
+    return new Response(JSON.stringify({ pngImageBase64 }));
   } catch (error) {
     console.error("Error converting jp2 image: ", error);
     return new Response(JSON.stringify({ error }), { status: 500 });

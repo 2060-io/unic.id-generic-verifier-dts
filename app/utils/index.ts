@@ -18,8 +18,8 @@ function sanitizeString(str?: string) {
   return words.join(" ");
 }
 
-const getMimeTypeFromBase64 = (base64: string) => {
-  const match = base64.match(/^data:(.*?);base64,/);
+const getDataUrlMimeType = (dataUrl: string) => {
+  const match = dataUrl.match(/^data:(.*?);base64,/);
   return match ? match[1] : null;
 };
 
@@ -31,7 +31,7 @@ const convertToPNG = async (base64JP2: string) => {
       body: JSON.stringify({ base64JP2 }),
     });
     const data = await res.json();
-    return data.message as string;
+    return data.pngImageBase64 as string;
   } catch (error) {
     console.error("Error converting jp2 image: ", error);
     return null;
@@ -48,10 +48,13 @@ export const transformClaimsData = async (claims: OriginalClaim[]) => {
 
     if (typeof value === "string" && value.startsWith("data:image/")) {
       let finalImageValue = value;
-      const mimeType = getMimeTypeFromBase64(value);
+      const mimeType = getDataUrlMimeType(value);
       if (mimeType === "image/jp2") {
-        const convertedImage = await convertToPNG(value);
-        finalImageValue = convertedImage ?? value;
+        const jp2Base64 = value.split(",")[1];
+        const convertedImage = await convertToPNG(jp2Base64);
+        finalImageValue = convertedImage
+          ? `data:image/png;base64,${convertedImage}`
+          : value;
       }
       stringRows.push({
         key: sanitizeString(name),
