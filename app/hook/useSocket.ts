@@ -51,8 +51,13 @@ export const useSocket = () => {
           const transformedClaims = transformClaimsData(msg.claims);
           setPresentationEventMessage({ ...msg, claims: transformedClaims });
         } else {
-          const { ref, status, proofExchangeId } = msg;
-          setPresentationEventMessage({ ref, status, proofExchangeId });
+          const { ref, status, proofExchangeId, issuerInvitationUrl } = msg;
+          setPresentationEventMessage({
+            ref,
+            status,
+            proofExchangeId,
+            issuerInvitationUrl,
+          });
         }
       }
     );

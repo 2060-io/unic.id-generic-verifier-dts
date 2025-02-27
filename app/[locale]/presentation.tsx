@@ -1,6 +1,7 @@
 import { useTranslations } from "next-intl";
 import { PresentationEventMessage } from "@/app/lib/definitions";
 import PresentationClaims from "./presentation-claims";
+import { QRCodeSVG } from "qrcode.react";
 import { ReactElement, useMemo } from "react";
 
 type Props = {
@@ -9,7 +10,7 @@ type Props = {
 
 export default function Presentation({ presentationEventMessage }: Props) {
   const t = useTranslations();
-  const { claims, status } = presentationEventMessage;
+  const { claims, status, issuerInvitationUrl } = presentationEventMessage;
   console.log("presentation status:", status);
 
   const render: Record<PresentationEventMessage["status"], ReactElement> =
@@ -43,9 +44,29 @@ export default function Presentation({ presentationEventMessage }: Props) {
           </div>
         ),
         "no-compatible-credentials": (
-          <p className="font-bold text-xl text-orange-500">
-            <span>{t("noCompatibleCredentials")}</span>
-          </p>
+          <>
+            <p className="font-bold text-xl text-black">
+              <span>{t("noCompatibleCredentials")}</span>
+            </p>
+            {issuerInvitationUrl && (
+              <>
+                <p className="md:mb-2 lg:mb-3 ">
+                  <span className="text-hologram-color text-xl md:text-xl lg:text-2xl font-semibold text-center">
+                    {t("scanToConnectToIssuer")}
+                  </span>
+                </p>
+                <div className="w-[300px] h-[300px] flex justify-center items-center mb-6 bg-white border-solid border-2 rounded-2xl border-gray-300">
+                  <QRCodeSVG
+                    value={issuerInvitationUrl}
+                    size={256}
+                    bgColor={"#ffffff"}
+                    fgColor={"#000000"}
+                    level={"H"}
+                  />
+                </div>
+              </>
+            )}
+          </>
         ),
         "verification-error": (
           <p className="font-bold text-xl text-red-500">
@@ -58,7 +79,7 @@ export default function Presentation({ presentationEventMessage }: Props) {
           </p>
         ),
       };
-    }, [claims, t]);
+    }, [claims, t, issuerInvitationUrl]);
 
   return render[status];
 }

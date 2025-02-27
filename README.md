@@ -32,6 +32,10 @@ At the moment, all configuration is done by environment variables. While most of
 | NEXT_PUBLIC_PORT             | Port where app is listening                   | 3000                                                                                                                 |
 | CREDENTIAL_DEFINITION_ID     | Unique identifier or Credential types         | `none`                                                                                                               |
 | SERVICE_AGENT_ADMIN_BASE_URL | Service agent base URL                        | `none`                                                                                                               |
+| ISSUER_DID | Optional public DID to let users connect to get their credentials in case they don't have any compatible credential                       | `none`                                                                                                               |
+| ISSUER_LABEL | A label to show in the invitation to credential issuer                       | Issuer                                                  |
+| ISSUER_IMAGE_URL | An URL pointing to an image to show in the invitation to credential issuer                       | `none`                                                                                                               |
+|
 
 **Note:** By default, it is recommended to use the following values for `CREDENTIAL_DEFINITION_ID` and `SERVICE_AGENT_ADMIN_BASE_URL`:
 

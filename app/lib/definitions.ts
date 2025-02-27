@@ -38,6 +38,7 @@ export type OriginalPresentationEventMessage = {
     | "verification-error"
     | "unspecified-error";
   proofExchangeId: string;
+  issuerInvitationUrl?: string;
 };
 
 export type PresentationEventMessage = Omit<

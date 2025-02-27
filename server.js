@@ -8,6 +8,24 @@ const dev = process.env.NODE_ENV !== "production";
 const app = next({ dev });
 const handle = app.getRequestHandler();
 
+function getIssuerInvitationUrl() {
+  const issuerDid = process.env.ISSUER_DID
+
+  if (!issuerDid) return
+  const json = {
+    '@type': 'https://didcomm.org/out-of-band/1.1/invitation',
+    '@id': issuerDid,
+    label: process.env.ISSUER_LABEL ?? 'Issuer',
+    imageUrl: process.env.ISSUER_IMAGE_URL,
+    services: [issuerDid],
+    handshake_protocols: ['https://didcomm.org/didexchange/1.0'],
+  }
+  const jsonBase64 = Buffer.from(JSON.stringify(json)).toString('base64url')
+
+  return `https://hologram.zone/?oob=${jsonBase64}`
+}
+
+
 app.prepare().then(() => {
   if (!process.env.SERVICE_AGENT_ADMIN_BASE_URL || !process.env.CREDENTIAL_DEFINITION_ID) {
     throw new Error(
@@ -71,6 +89,11 @@ app.prepare().then(() => {
     });
     socket.on("presentationEvent", (data) => {
       console.log("socket presentationEvent:", data);
+
+      // Attach issuer invitation URL in case the user does not have any compatible credential
+      if (data.status === "no-compatible-credentials") {
+        data.issuerInvitationUrl = getIssuerInvitationUrl()
+      }
       io.to(data.ref).emit("presentationEventMessage", data);
     });
 
