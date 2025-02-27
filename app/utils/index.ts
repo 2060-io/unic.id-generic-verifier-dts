@@ -1,4 +1,5 @@
 import { OriginalClaim, Claim } from "@/app/lib/definitions";
+import defaultPngBase64 from "./defaultPngBase64";
 
 /**
  * Converts a camelCase string to a sentence format (first letter capitalized, rest in lower case).
@@ -34,7 +35,7 @@ const convertToPNG = async (base64JP2: string) => {
     return data.pngImageBase64 as string;
   } catch (error) {
     console.error("Error converting jp2 image: ", error);
-    return null;
+    return defaultPngBase64;
   }
 };
 
@@ -52,9 +53,7 @@ export const transformClaimsData = async (claims: OriginalClaim[]) => {
       if (mimeType === "image/jp2") {
         const jp2Base64 = value.split(",")[1];
         const convertedImage = await convertToPNG(jp2Base64);
-        finalImageValue = convertedImage
-          ? `data:image/png;base64,${convertedImage}`
-          : value;
+        finalImageValue = `data:image/png;base64,${convertedImage}`;
       }
       stringRows.push({
         key: sanitizeString(name),
