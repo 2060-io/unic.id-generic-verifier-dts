@@ -16,34 +16,31 @@ if (!fs.existsSync(tempDir)) {
 const convertBase64JP2ToPNGBase64 = (base64JP2: string) => {
   return new Promise((resolve, reject) => {
     try {
-      // Decode base64 to a JP2 file
       const jp2Filename = `input_${Date.now()}.jp2`;
       const jp2Path = path.join(tempDir, jp2Filename);
       const pngFilename = `output_${Date.now()}.png`;
       const pngPath = path.join(tempDir, pngFilename);
-
+      const jp2Buffer = Buffer.from(base64JP2, "base64");
       // Save the JP2 file
-      const buffer = Buffer.from(base64JP2, "base64");
-      fs.writeFileSync(jp2Path, buffer);
-
+      fs.writeFileSync(jp2Path, jp2Buffer);
       // Execute the conversion using ImageMagick
       const command = `convert "${jp2Path}" "${pngPath}"`;
-
       exec(command, (err, stdout, stderr) => {
         if (err) {
-          return reject(`Error converting JP2 to PNG ${stderr}`);
+          // Delete temporary files
+          fs.unlinkSync(jp2Path);
+          fs.unlinkSync(pngPath);
+          return reject(stderr);
         }
         // Read the resulting JPG image and convert it to base64
         const pngImageBase64 = fs.readFileSync(pngPath, { encoding: "base64" });
-
         // Delete temporary files
         fs.unlinkSync(jp2Path);
         fs.unlinkSync(pngPath);
-
         resolve(pngImageBase64);
       });
     } catch (error) {
-      reject(error);
+      reject(`Error converting JP2 to PNG ${error}`);
     }
   });
 };
