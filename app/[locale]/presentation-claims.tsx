@@ -15,7 +15,9 @@ export default function PresentationClaims({ claims }: { claims: Claim[] }) {
             height={20}
           />
         ) : (
-          <span className="font-light text-base">{item.value}</span>
+          <span className="flex-1 break-all font-light text-base">
+            {item.value}
+          </span>
         )}
       </div>
     );
