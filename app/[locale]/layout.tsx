@@ -27,14 +27,14 @@ export default async function RootLayout({
   // side is the easiest way to get started
   const messages = await getMessages();
   return (
-    <html lang={locale} className="bg-white dark:bg-gray-900">
+    <html lang={locale} className="bg-white dark:bg-gray-950">
       <head>
         <title>{title}</title>
         <meta name="description" content={description} />
       </head>
       <body className={`font-euclidCircularA ` + inter.className}>
         <NextIntlClientProvider messages={messages}>
-          <div className="mt-5 bg-white dark:bg-gray-900 text-black dark:text-gray-300">
+          <div className="mt-5 bg-white dark:bg-gray-950 text-black dark:text-gray-300">
             <Header />
             <main className="flex flex-col row-start-2 items-center sm:items-center justify-center">
               {children}

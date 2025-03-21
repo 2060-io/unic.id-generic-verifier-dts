@@ -18,5 +18,11 @@ export default {
       },
     },
   },
-  plugins: [],
+  variants: {
+    extend: {
+      lineClamp: ["hover"],
+    },
+  },
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  plugins: [require("@tailwindcss/line-clamp")],
 } satisfies Config;
